@@ -9,30 +9,37 @@
         <link href="src/easyPop.min.css" rel="stylesheet" />
     </head>
     <body>
+        <div id="eugenia-chat">
+            <div class="chat-channels">
+                <div id="handle"></div>
+                <br />
+                <div class="friend_name"><strong>All Chat</strong></div>
+                <br />
+                <div>Now Online:</div>
 
-        <div id="mario-chat">
-            <h2>Sample Chat</h2>
-            <div style="margin-left:20px;" id="handle"></div>
-            <br />
-            <div style="margin-left:20px;"><span style="color:#080;">&bull;</span> <span id="online"></span> Online</div>
-            <div id="friend">
-
+                <div id="friend"></div>
             </div>
-            <br />
-            <div id="chat-window">
-                <div id="output"></div>
-                <div id="feedback"></div>
-            </div>
-            <!--<input id="handle" type="text" placeholder="Name" />-->
-            
-            <input id="message" type="text" placeholder="Message" />
-            <button id="send">Send</button>
+            <div class="chat-body">
+                <h2>All Chat</h2>
+                <br />
+                <div id="chat-window">
+                    <div id="output"></div>
+                    <div id="feedback"></div>
+                </div>
+                <!--<input id="handle" type="text" placeholder="Name" />-->
 
-            <div style="position:absolute;right:-250px; top:0;">
-                <div style="width:250px;">
-                    <div style=" padding-left:20px;">
-                        <div id="userlist">
+                <div class="chat-send">
+                    <textarea id="message" type="text" placeholder="Message"></textarea>
+                    <button id="send">Send</button>
+                </div>
 
+
+                <div style="position:absolute;right:-250px; top:0;">
+                    <div style="width:250px;">
+                        <div style=" padding-left:20px;">
+                            <div id="userlist">
+
+                            </div>
                         </div>
                     </div>
                 </div>
