@@ -6,3 +6,52 @@ Pentru a executa aplicatia:
 3. localhost:340  -> instanta de chat
 
 
+
+Sarcinile propuse:
+a. Messaging Systems,
+b. Messaging Channels,
+c. Message Constructions,
+d. Message Routing,
+e. Message Transformation,
+f. Messaging endpoints,
+g. System management.
+
+
+Implimentarea:
+a. Messaging Systems -  Crearea evenimentelor de socket.io: client/server
+ Evenimente:
+ - conexiune
+ - initializarea
+ - lista persoanelor online
+ - taparea mesajului
+ - transmiterea mesajelor
+ - deconexiunea
+ 
+b. Messaging Channels - crearea canalelor private.
+Inserarea Uilizatorului nou in baza de date, Switch Channels.
+
+c.Message Constructions - Socket.io oferă posibilitatea de potrivit mesajele cererii și răspunsului într­un sistem de mesagerie asincronă prin atașare mesajului unui identificator de corelare.
+id de corelare este socket.id
+
+d. Message Routing -Ruterul bazat pe conținut examinează mesajul și îl rutează în dependență de datele conținute în mesaj. 
+
+e. Message Transformation - De ex: la scrierea unui mesaj ce contine code js, html, executarea acestuia nu va avea loc, se va afisa simplu text.
+
+Nu se va executa JS, html nu se va compila
+
+f. Messaging endpoints - Un consumator de acest tip va aștepta un mesaj, îl va procesa și va trece spre următorul mesaj.
+Astfel acest șablon este prin definiție sincron, căci va bloca firul pînă la venirea următorului mesaj.
+Ordinea mesajului va fi respecta in dependenta de ordinea in care acestea au fost expediate. 
+
+
+Metoda de utilizarea a Aplicatiei de catre utilizator:
+-se logheza cu un user name
+-faci parte din chatul comun
+-poti alege un utilizator din chat pentru ai trimite un mesaj privat
+-poti primi mesaje de la utilizatorii conectati
+
+
+
+
+
+
