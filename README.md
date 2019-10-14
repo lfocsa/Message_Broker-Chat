@@ -51,7 +51,10 @@ Ordinea mesajului va fi respecta in dependenta de ordinea in care acestea au fos
 4. poti primi mesaje de la utilizatorii conectati
 
 
-
+<img src="screen/submit-chat.png"/>
+<img src="screen/Chat-comun.png"/>
+<img src="screen/canal-privat.png"/>
+<img src="screen/notification.png"/>
 
 
 
