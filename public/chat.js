@@ -7,7 +7,7 @@ $(document).ready(function () {
         onSuccess: function (val) {
 
             var name = "";
-            var recipient = "";
+            var recipient = "All Chat";
 
 
             if (val != '') {
@@ -16,12 +16,13 @@ $(document).ready(function () {
                 name = "Unkown";
             }
 
-            $("#mario-chat").fadeIn();
+            $("#eugenia-chat").fadeIn();
 
-            $("#handle").html("You're logged in as " + name);
+            $("#handle").html("Hi " + name);
 
             // Make connection
             var socket = io.connect('http://localhost:340/');
+            //192.168.56.1  acces retea  ipconfig
 
             // Query DOM
             var message = document.getElementById('message'),
@@ -31,9 +32,7 @@ $(document).ready(function () {
                 friend_name = document.getElementsByClassName('friend_name'),
                 output = document.getElementById('output'),
                 feedback = document.getElementById('feedback'),
-                online = document.getElementById('online'),
                 userlist = document.getElementById('userlist');
-
 
             $("#message").focus();
 
@@ -43,7 +42,8 @@ $(document).ready(function () {
                 }
             });
             socket.emit('init', {
-                name: name
+                name: name,
+                recipient: recipient
             });
 
             // Listen for events
@@ -65,9 +65,17 @@ $(document).ready(function () {
                 }
             });
             socket.on('getFriends', function (data) {
+                var offline =data.other;
+
                 friend.innerHTML = '';
-                data.forEach(function(person){
-                    friend.innerHTML += '<div  class="friend_name"><strong>' + person.handle + ': </strong></div>';
+                data.online.forEach(function(person){
+                    offline = offline.filter(x => x.name !== person.handle);
+                    if(person.handle != name)
+                    friend.innerHTML += '<div  class="friend_name"><span style="color:#080;">&bull;</span> <strong>' + person.handle + ': </strong></div>';
+                });
+                    offline.forEach(function(person){
+                    if(person.name != name)
+                        friend.innerHTML += '<div  class="friend_name"><span style="color: #800;">&bull;</span> <strong>' + person.name + ': </strong></div>';
                 });
             });
 
@@ -83,6 +91,18 @@ $(document).ready(function () {
             });
 
             $('body').on('click','.friend_name', function () {
+                var channelName = $(this).html();
+                var user_name = $(this).find('strong').eq(0).html();
+                output.innerHTML = '';
+                $('h2').html(channelName);
+                $('#eugenia-chat').attr('Current',user_name);
+                recipient = user_name;
+                socket.emit('channel-switch', {
+                    name: name,
+                    recipient: recipient
+                });
+
+
 
             });
 
@@ -104,8 +124,7 @@ $(document).ready(function () {
             });
 
             socket.on('online', function (data) {
-                online.innerHTML = '';
-                online.innerHTML += '<strong>' + data + '</strong>';
+
             });
 
             socket.on('typing', function (data) {

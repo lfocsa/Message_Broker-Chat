@@ -1,0 +1,157 @@
+body{
+    font-family: 'Nunito';
+}
+
+h2{
+    font-size: 18px;
+    padding: 10px 20px;
+    color: #ae2121;
+}
+
+input{outline-color: #ae2121 !important;}
+
+/*@media screen and (max-width: 39.9375em) {
+}
+
+@media screen and (min-width: 40em) {
+}
+
+@media screen and (min-width: 40em) and (max-width: 63.9375em) {
+}
+
+@media screen and (min-width: 64em) {
+}
+
+@media screen and (min-width: 64em) and (max-width: 74.9375em) {
+}*/
+
+
+@media screen and (max-width: 599px) {
+    #eugenia-chat {
+        max-width: 100%;
+        width: 100%;
+        margin: 30px auto;
+        border: 1px solid #ddd;
+        box-shadow: 1px 3px 5px rgba(0,0,0,0.05);
+        border-radius: 2px;
+        position: relative;
+        display: none;
+    }
+
+    #chat-window {
+        height: 250px;
+        overflow: auto;
+        background: #f9f9f9;
+    }
+
+}
+
+/* Medium and up */
+@media screen and (min-width: 600px) {
+    .chat-channels{
+        width: 104px;
+        background-color: #f9f9f9;
+        box-shadow: 2px 0 2px rgba(0,0,0,0.2);
+        position: relative;
+        z-index: 2;
+        height: calc(100% - 16px);
+        float: left;
+        overflow-y: scroll;
+        padding:8px;
+
+        .friend_name{
+          padding: 8px 0;
+          border-bottom: 1px solid rgba(0,0,0,0.2);
+          font-weight: bold;
+
+        }
+
+    }
+    .chat-body{
+        background-color: #f9f9f9;
+        width: 400px;
+        height: 100%;
+        float: left;
+        padding-left: 30px;
+        padding-right:50px;
+    }
+    #eugenia-chat{
+        height: 500px;
+        width: 600px;
+        margin: 30px auto;
+        border: 1px solid #ddd;
+        box-shadow: 1px 3px 5px rgba(0,0,0,0.05);
+        border-radius: 2px;
+        position:relative;
+        display: none;
+    }
+    #chat-window {
+        height: 327px;
+        overflow: auto;
+
+    }
+    .chat-send{
+          position: relative;
+          border: 1px solid rgba(0,0,0,0.2);
+
+        #message{
+          width: 100%;
+          min-height: 30px;
+          font-size: 12px;
+          padding: 0 58px 0 8px;
+        }
+
+        #send{
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          width: 58px;
+          height: 30px;
+          font-size: 12px;
+          line-height: 30px;
+          text-align: center;
+        }
+    }
+
+
+}
+
+
+
+#output p{
+    padding: 14px 0px;
+    border-bottom: 1px solid #e9e9e9;
+    color: #555;
+}
+
+#feedback p{
+    color: #aaa;
+    padding: 14px 0px;
+    margin: 0 20px;
+}
+
+#output strong{
+    color: #ae2121;
+}
+
+label{
+    box-sizing: border-box;
+    display: block;
+    padding: 10px 20px;
+}
+
+textarea{
+    box-sizing: border-box;
+    background: #eee;
+    border: 0;
+    display: block;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+button{
+    background: #ae2121;
+    color: #fff;
+    border: 0;
+    border-radius: 0 0 2px 2px;
+}
