@@ -4,7 +4,7 @@ var sqlite = require('sqlite')
 
 // App setup
 var app = express();
-var server = app.listen(340, function () {
+var server = app.listen(340, function(){
     console.log('listening for requests on port 340,');
 });
 
@@ -18,22 +18,18 @@ io.on('connection', (socket) => {
     console.log('made socket connection', socket.id);
     socket.join('chat room');
 
+
+
     socket.on('init', function (data) {
-        if (data.name == null) {
+        if(data.name == null){
             console.log("name is null!")
             return;
         }
-
-        sqlSaveUsers(data);
-        var userInitData = { handle: data.name, id: socket.id };
-        personsOnline = personsOnline.filter(x => x.handle != data.name);
-        personsOnline.push(userInitData);
-
+        sqlSaveUsers(data.name);
+        personsOnline.push({handle:data.name,id:socket.id});
         sqlGetUsers(socket);
         sqlGetMessages(data.name, data.recipient, socket);
-
-        console.log(userInitData);
-        console.log('User ' + data.name + ' selected >' + data.recipient + '< channel.');
+        console.log(data.recipient);
     });
 
     // setInterval(function () {
@@ -48,60 +44,37 @@ io.on('connection', (socket) => {
         sqlSendMessages(data, io.sockets);
     });
 
-    socket.on('channel-switch', function (data) {
-        if (data.name == null) {
+    socket.on('channel-switch', function(data){
+        if(data.name == null){
             console.log("name is null!")
             return;
         }
-
-        console.log('User ' + data.name + ' selected >' + data.recipient + '< channel.');
-
         sqlGetUsers(socket);
         sqlGetMessages(data.name, data.recipient, socket);
     });
 
     // Handle typing event
 
-    socket.on('typing', function (data) {
-        console.log(data.name + ' is typing to ' + data.recipient);
-        if (data.recipient == 'All Chat') {
-            socket.broadcast.emit('typing', data);
-        } else {
-            var typingTo = personsOnline.filter(obj => obj.handle == data.recipient);
-            var typingToIsOnline = typingTo != null;
-            if (typingToIsOnline) {
-                typingTo = typingTo[0];
-                io.to(typingTo.id).emit('typing', data);
-            }
-
-        }
+    socket.on('typing', function(data){
+        socket.broadcast.emit('typing', data);
     });
 
-    socket.on('stoptyping', function (data) {
-        if (data.recipient == 'All Chat') {
-            socket.broadcast.emit('stoptyping', data);
-        } else {
-            var typingTo = personsOnline.filter(obj => obj.handle == data.recipient);
-            var typingToIsOnline = typingTo != null;
-            if (typingToIsOnline) {
-                typingTo = typingTo[0];
-                io.to(typingTo.id).emit('stoptyping', data);
-            }
-        }
+    socket.on('stoptyping', function(data){
+        socket.broadcast.emit('stoptyping', data);
     });
 
 
-    //var onlineMembers = io.sockets.adapter.rooms['chat room'].length;
+        //var onlineMembers = io.sockets.adapter.rooms['chat room'].length;
 
-    socket.on('disconnect', function () {
-        personsOnline.filter(function (x) {
-            return x.id !== socket.id;
+        socket.on('disconnect', function () {
+            personsOnline.filter(function(x) {
+                return x.id !== socket.id;
 
+            });
+            io.emit('online', personsOnline.length);
+            io.emit('getFriends', personsOnline);
+            sqlGetUsers(socket);
         });
-        io.emit('online', personsOnline.length);
-        io.emit('getFriends', personsOnline);
-        sqlGetUsers(socket);
-    });
 
 });
 
@@ -110,44 +83,35 @@ function NumClientsInRoom(namespace, room) {
     return Object.keys(clients).length;
 }
 
-async function sqlSendMessages(data, socket) {
+async function sqlSendMessages(data, socket){
 
     try {
         const db = await sqlite.open('./database.sqlite', { Promise });
 
-        await db.run(`INSERT INTO messages(name, msg, recipient) VALUES("${data.handle}", "${data.message}", "${data.recipient}")`, function (err) {
+        await db.run(`INSERT INTO messages(name, msg, recipient) VALUES("${data.handle}", "${data.message}", "${data.recipient}")`, function(err) {
             if (err) {
                 return console.log(err.message);
             }
         });
 
-        if (data.recipient == "All Chat") {
-            io.emit('chat', data);
-        } else {
-            var typingTo = personsOnline.filter(obj => obj.handle == data.recipient);
-            var typingToIsOnline = typingTo != null;
-            if (typingToIsOnline) {
-                typingTo = typingTo[0];
-                io.to(typingTo.id).emit('chat', data);
-            }
-        }
+        socket.emit('chat', data);
 
     } catch (err) {
         next(err);
     }
 }
 
-async function sqlGetMessages(name, recipient, socket) {
+async function sqlGetMessages(name, recipient, socket){
 
     try {
         const db = await sqlite.open('./database.sqlite', { Promise });
 
-        if (recipient == 'All Chat') {
+        if(recipient == 'All Chat'){
             let [messages] = await Promise.all([
                 db.all(`SELECT * FROM messages WHERE recipient = '${recipient}'`)
             ]);
             socket.emit('getMessages', messages);
-        } else {
+        } else{
             let [messages] = await Promise.all([
                 db.all(`SELECT * FROM messages WHERE (recipient = '${recipient}' AND name='${name}') OR (name = '${recipient}' and recipient='${name}' )`)
             ]);
@@ -159,42 +123,38 @@ async function sqlGetMessages(name, recipient, socket) {
 }
 
 
-async function sqlSaveUsers(data) {
+async function sqlSaveUsers(data){
+
     try {
         const db = await sqlite.open('./database.sqlite', { Promise });
-
         let [user] = await Promise.all([
-            db.all(`SELECT * FROM users WHERE name='${data.name}'`)
+            db.all(`SELECT * FROM users WHERE name='${name}'`)
         ]);
-       
-        if (user.length == 0) {
-            let insert = await db.run(`INSERT INTO users(name) VALUES("${data.name}")`, function (err) {
-                if (err) {
-                    return console.log(err.message);
-                }
-            });
 
-            console.log('New user inserted: ' + data.name);
-            console.log(insert);
-        }
+        if(user.length == 0)
+        await db.run(`INSERT INTO users(name) VALUES("${data.handle}")`, function(err) {
+            if (err) {
+                return console.log(err.message);
+            }
+        });
 
     } catch (err) {
         next(err);
     }
 }
 
-async function sqlGetUsers(socket) {
+async function sqlGetUsers(socket){
 
     try {
         const db = await sqlite.open('./database.sqlite', { Promise });
 
-        let [users] = await Promise.all([
+        let [user] = await Promise.all([
             db.all(`SELECT * FROM users`)
         ]);
 
         var allUsers = {
             online: personsOnline,
-            other: users
+            other: user
         };
 
         io.emit('getFriends', allUsers);

@@ -8,7 +8,7 @@ $(document).ready(function () {
 
             var name = "";
             var recipient = "All Chat";
-            $('#eugenia-chat').attr('Current', recipient);
+
 
             if (val != '') {
                 name = val;
@@ -46,21 +46,13 @@ $(document).ready(function () {
                 recipient: recipient
             });
 
-            socket.on('reconnect_attempt', () => {
-                socket.emit('init', {
-                    name: name,
-                    recipient: recipient
-                });
-            });
-
             // Listen for events
             socket.on('getMessages', function (data) {
-                $("#output").html("");
-                console.log('getMessages');
-                console.log(data);
+                output.innerHTML =="";
 
-                if (data != null) {
-                    if (data.length > 0) {
+                console.log(data);
+                if(data != null){
+                    if(data.length > 0){
                         data.forEach(msg => {
                             feedback.innerHTML = '';
                             output.innerHTML += '<p><strong>' + msg.name + ': </strong>' + msg.msg + '</p>';
@@ -73,97 +65,62 @@ $(document).ready(function () {
                 }
             });
             socket.on('getFriends', function (data) {
-                var offline = data.other;
+                var offline =data.other;
+
                 friend.innerHTML = '';
-
-                data.online.forEach(function (person) {
-                    if (person.handle != name) {
-                        offline = offline.filter(x => x.name !== person.handle);
-                        friend.innerHTML += '<div  class="friend_name" data-name="' + person.handle +'"><span class="newMsgs">0</span><b><span style="color:#080;">&bull;</span> <strong>' + person.handle + '</strong></b>: </div>';
-                    }
+                data.online.forEach(function(person){
+                    offline = offline.filter(x => x.name !== person.handle);
+                    if(person.handle != name)
+                    friend.innerHTML += '<div  class="friend_name"><span style="color:#080;">&bull;</span> <strong>' + person.handle + ': </strong></div>';
                 });
-
-                offline.forEach(function (person) {
-                    if (person.name != name) {
-                        friend.innerHTML += '<div  class="friend_name" data-name="' + person.handle +'"><span class="newMsgs">0</span><b><span style="color: #800;">&bull;</span> <strong>' + person.name + '</strong></b>: </div>';
-                    }
+                    offline.forEach(function(person){
+                    if(person.name != name)
+                        friend.innerHTML += '<div  class="friend_name"><span style="color: #800;">&bull;</span> <strong>' + person.name + ': </strong></div>';
                 });
             });
 
             // Emit events
             btn.addEventListener('click', function () {
-                if (message.value != "") {
+                socket.emit('chat', {
+                    message: message.value,
+                    handle: name,
+                    recipient: recipient
 
-                    socket.emit('chat', {
-                        message: message.value,
-                        handle: name,
-                        recipient: recipient
-                    });
-
-                    output.innerHTML += '<p><strong>' + name + ': </strong>' + message.value + '</p>';
-                    var elmnt = document.getElementById("output");
-                    var y = elmnt.scrollHeight;
-                    $("#chat-window").scrollTop(y);
-
-                    message.value = "";
-                }
+                });
+                message.value = "";
             });
 
-            $('body').on('click', '.friend_name', function () {
-                $(".friend_name").removeClass("active");
-                $(this).addClass("active");
-
-                var newMsg = $(this).find(".newMsgs");
-                newMsg.removeClass("new");
-                newMsg.html(0);
-
-                var channelName = $(this).find('b').eq(0).html();
+            $('body').on('click','.friend_name', function () {
+                var channelName = $(this).html();
                 var user_name = $(this).find('strong').eq(0).html();
                 output.innerHTML = '';
-                $('h2').html(user_name);
-                $('#eugenia-chat').attr('Current', user_name);
+                $('h2').html(channelName);
+                $('#eugenia-chat').attr('Current',user_name);
                 recipient = user_name;
                 socket.emit('channel-switch', {
                     name: name,
                     recipient: recipient
                 });
+
+
+
             });
 
             message.addEventListener('keypress', function () {
-                socket.emit('typing', {
-                    name: name,
-                    recipient: recipient
-                });
+                socket.emit('typing', name);
                 setTimeout(function () {
-                    socket.emit('stoptyping', {
-                        name: name,
-                        recipient: recipient
-                    });
+                    socket.emit('stoptyping');
                 }, 1000);
             });
 
             // Listen for events
             socket.on('chat', function (data) {
-                console.log('Chat from ' + data.handle + ' ');
-                console.log(data);
+                feedback.innerHTML = '';
+                output.innerHTML += '<p><strong>' + data.handle + ': </strong>' + data.message + '</p>';
 
-                if (data.recipient == name) {
-                    var newMsg = $(".friend_name[data-name='" + data.handle + "']").eq(0).find(".newMsgs");
-                    newMsg.html(Number(newMsg.html()) + 1);
-                    newMsg.addClass("new");
-                }
-
-                if ($('#eugenia-chat').attr('Current') == data.handle ||
-                    $('#eugenia-chat').attr('Current') == data.recipient ||
-                    ($('#eugenia-chat').attr('Current') == 'All Chat' && data.recipient == 'All Chat')) {
-
-                    feedback.innerHTML = '';
-                    output.innerHTML += '<p><strong>' + data.handle + ': </strong>' + data.message + '</p>';
-
-                    var elmnt = document.getElementById("output");
-                    var y = elmnt.scrollHeight;
-                    $("#chat-window").scrollTop(y);
-                }
+                var elmnt = document.getElementById("output");
+                var y = elmnt.scrollHeight;
+                $("#chat-window").scrollTop(y);
             });
 
             socket.on('online', function (data) {
@@ -171,18 +128,15 @@ $(document).ready(function () {
             });
 
             socket.on('typing', function (data) {
-                if ($('#eugenia-chat').attr('Current') == data.name || ($('#eugenia-chat').attr('Current') == 'All Chat' && data.recipient =='All Chat')) {
-                    feedback.innerHTML = '<p><em>' + data.name + ' is typing a message...</em></p>';
-                    var elmnt = document.getElementById("output");
-                    var y = elmnt.scrollHeight;
-                    $("#chat-window").scrollTop(y);
-                }
+                feedback.innerHTML = '<p><em>' + data + ' is typing a message...</em></p>';
+
+                var elmnt = document.getElementById("output");
+                var y = elmnt.scrollHeight;
+                $("#chat-window").scrollTop(y);
             });
 
             socket.on('stoptyping', function (data) {
-                if ($('#eugenia-chat').attr('Current') == data.name || ($('#eugenia-chat').attr('Current') == 'All Chat' && data.recipient == 'All Chat')) {
-                    feedback.innerHTML = '';
-                }
+                feedback.innerHTML = '';
             });
         }
     });
