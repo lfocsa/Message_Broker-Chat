@@ -16,6 +16,8 @@ e. Message Transformation,
 f. Messaging endpoints,
 g. System management.
 
+<b>Metoda de lucru in echipa si repartizarea sarcinilor:</b>
+ <img src="screen/modul de lucru.png"/>
 
 <b>Implimentarea:</b>
 a. Messaging Systems -  Crearea evenimentelor de socket.io: client/server
